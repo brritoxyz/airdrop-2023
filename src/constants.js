@@ -17,8 +17,13 @@ const STAKED_BRR_DEPLOYMENT_BLOCK = 7756737n;
 const BRR_ETH_DEPLOYMENT_BLOCK = 7540709n;
 
 const SNAPSHOT_BLOCK = 8239469n;
-
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+
+// BRR and stakedBRR token holders split ~80% of the total airdrop amount.
+const BRR_AIRDROP_AMOUNT = 904820327999999999999999n;
+
+// brrETH token holders split ~20% of the total airdrop amount.
+const ETH_AIRDROP_AMOUNT = 226205081999999999999999n;
 
 module.exports = {
     BRR,
@@ -29,4 +34,6 @@ module.exports = {
     BRR_ETH_DEPLOYMENT_BLOCK,
     SNAPSHOT_BLOCK,
     ZERO_ADDRESS,
+    BRR_AIRDROP_AMOUNT,
+    ETH_AIRDROP_AMOUNT,
 };
