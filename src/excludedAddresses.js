@@ -1,13 +1,9 @@
+import { BRR, STAKED_BRR, BRR_ETH } from "./constants";
+
 const BRRITO_TEAM = [
     "0x8Fcc36CCa8dE6E5d6c44d4de5F8fbCa86742e0af",
     "0x6CD1D5A560Aa5f2dFa571cd2DFa0B5a165362331",
 ];
-
-// https://github.com/brritoxyz/token?tab=readme-ov-file#contract-deployments.
-const BRR = "0x6d80d90ce251985bF41A98c6FDd6b7b975Fff884";
-
-// https://github.com/brritoxyz/fee-distribution-contracts?tab=readme-ov-file#contract-deployments.
-const STAKED_BRR = "0x9A2a2E71071Caff506050bE6747B4E1369964933";
 
 // https://github.com/brritoxyz/token-distribution-contracts?tab=readme-ov-file#contract-deployments.
 const INITIAL_TOKEN_DISTRIBUTION_CONTRACTS = [
@@ -43,6 +39,7 @@ export default [
     BRRITO_TEAM,
     BRR,
     STAKED_BRR,
+    BRR_ETH,
     ...INITIAL_TOKEN_DISTRIBUTION_CONTRACTS,
     ...ADVISOR_VESTING_WALLET_CONTRACTS,
 ];
