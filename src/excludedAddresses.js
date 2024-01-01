@@ -1,4 +1,4 @@
-import { BRR, STAKED_BRR, BRR_ETH } from "./constants";
+const { BRR, STAKED_BRR, BRR_ETH } = require("./constants");
 
 const BRRITO_TEAM = [
     "0x8Fcc36CCa8dE6E5d6c44d4de5F8fbCa86742e0af",
@@ -35,11 +35,16 @@ const ADVISOR_VESTING_WALLET_CONTRACTS = [
     "0x2F239240E1AB686b5623f05E91bbc7Cdf11B17B7",
 ];
 
-export default [
-    BRRITO_TEAM,
+module.exports = [
     BRR,
     STAKED_BRR,
     BRR_ETH,
+    ...BRRITO_TEAM,
     ...INITIAL_TOKEN_DISTRIBUTION_CONTRACTS,
     ...ADVISOR_VESTING_WALLET_CONTRACTS,
-];
+].reduce((acc, account) => {
+    // Convert to an object before exporting for O(1) lookups.
+    if (!acc[account]) acc[account] = true;
+
+    return acc;
+}, {});
