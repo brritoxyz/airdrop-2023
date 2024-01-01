@@ -10,9 +10,16 @@ const {
     BRR_ETH_DEPLOYMENT_BLOCK,
     SNAPSHOT_BLOCK,
     ZERO_ADDRESS,
+    FILEPATHS,
 } = require("./constants");
 const erc20Abi = require("./abi/erc20.json");
 const excludedAddresses = require("./excludedAddresses");
+const fsWriteFileSyncJSON = require("./utils/fsWriteFileSyncJSON");
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt#use_within_json.
+BigInt.prototype.toJSON = function () {
+    return this.toString();
+};
 
 const computeAccountBalances = (logs) => {
     return logs.reduce((acc, { args: { from, to, amount } }) => {
@@ -72,3 +79,27 @@ const getTransferLogs = async () => {
         console.error(err);
     }
 };
+
+const calculateAirdropAmounts = async () => {
+    const { brr, stakedBRR, brrETH } = await getTransferLogs();
+    const brrBalances = computeAccountBalances([...brr, ...stakedBRR]);
+    const brrETHBalances = computeAccountBalances(brrETH);
+
+    // Store the transfer logs and token balances for reviewal purposes.
+    await fsWriteFileSyncJSON(FILEPATHS.BRR_TRANSFER_LOGS, brr);
+    await fsWriteFileSyncJSON(FILEPATHS.STAKED_BRR_TRANSFER_LOGS, stakedBRR);
+    await fsWriteFileSyncJSON(FILEPATHS.BRR_ETH_TRANSFER_LOGS, brrETH);
+    await fsWriteFileSyncJSON(FILEPATHS.BRR_TOKEN_BALANCES, brrBalances);
+    await fsWriteFileSyncJSON(FILEPATHS.BRR_ETH_TOKEN_BALANCES, brrETHBalances);
+
+    const totalBrrBalances = Object.values(brrBalances).reduce(
+        (acc, balance) => acc + balance,
+        BigInt(0)
+    );
+    const totalBrrETHBalances = Object.values(brrETHBalances).reduce(
+        (acc, balance) => acc + balance,
+        BigInt(0)
+    );
+};
+
+calculateAirdropAmounts();

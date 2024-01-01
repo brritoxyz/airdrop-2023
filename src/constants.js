@@ -23,7 +23,15 @@ const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 const BRR_AIRDROP_AMOUNT = 904820327999999999999999n;
 
 // brrETH token holders split ~20% of the total airdrop amount.
-const ETH_AIRDROP_AMOUNT = 226205081999999999999999n;
+const BRR_ETH_AIRDROP_AMOUNT = 226205081999999999999999n;
+
+const FILEPATHS = {
+    BRR_TRANSFER_LOGS: `${__dirname}/data/transferLogs/brr.json`,
+    STAKED_BRR_TRANSFER_LOGS: `${__dirname}/data/transferLogs/stakedBRR.json`,
+    BRR_ETH_TRANSFER_LOGS: `${__dirname}/data/transferLogs/brrETH.json`,
+    BRR_TOKEN_BALANCES: `${__dirname}/data/tokenBalances/brr.json`,
+    BRR_ETH_TOKEN_BALANCES: `${__dirname}/data/tokenBalances/brrETH.json`,
+};
 
 module.exports = {
     BRR,
@@ -35,5 +43,6 @@ module.exports = {
     SNAPSHOT_BLOCK,
     ZERO_ADDRESS,
     BRR_AIRDROP_AMOUNT,
-    ETH_AIRDROP_AMOUNT,
+    BRR_ETH_AIRDROP_AMOUNT,
+    FILEPATHS,
 };
