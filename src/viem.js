@@ -5,3 +5,4 @@ module.exports = createPublicClient({
     chain: base,
     transport: http(process.env.RPC_URL ?? ""),
 });
+
