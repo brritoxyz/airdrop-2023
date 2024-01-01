@@ -9,8 +9,10 @@ const {
     BRR_ETH,
     BRR_ETH_DEPLOYMENT_BLOCK,
     SNAPSHOT_BLOCK,
+    ZERO_ADDRESS,
 } = require("./constants");
 const erc20Abi = require("./abi/erc20.json");
+const excludedAddresses = require("./excludedAddresses");
 
 const getTransferLogs = async () => {
     try {
@@ -47,4 +49,24 @@ const getTransferLogs = async () => {
     } catch (err) {
         console.error(err);
     }
+};
+
+const computeAccountBalances = (logs) => {
+    return logs.reduce((acc, { args: { from, to, amount } }) => {
+        // Exclude the zero address, and project and advisor contract addresses.
+        if (from !== ZERO_ADDRESS && !excludedAddresses[from]) {
+            // Assign the account balance to zero if it doesn't exist.
+            if (acc[from] === undefined) acc[from] = BigInt(0);
+
+            acc[from] -= amount;
+        }
+
+        if (to !== ZERO_ADDRESS && !excludedAddresses[to]) {
+            if (acc[to] === undefined) acc[to] = BigInt(0);
+
+            acc[to] += amount;
+        }
+
+        return acc;
+    }, {});
 };
