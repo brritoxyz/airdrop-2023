@@ -31,12 +31,12 @@ const computeAccountBalances = (logs) =>
             acc[from] -= amount;
 
             // If the token sender no longer has a balance, remove them.
-            if (acc[from] === BigInt(0)) delete acc[from];
+            if (acc[from] === 0n) delete acc[from];
         }
 
         if (to !== ZERO_ADDRESS && !excludedAddresses[to]) {
             // Assign the account balance to zero if it doesn't exist.
-            if (acc[to] === undefined) acc[to] = BigInt(0);
+            if (acc[to] === undefined) acc[to] = 0n;
 
             acc[to] += amount;
         }
@@ -45,7 +45,7 @@ const computeAccountBalances = (logs) =>
     }, {});
 
 const sumBalances = (balances) =>
-    Object.values(balances).reduce((acc, balance) => acc + balance, BigInt(0));
+    Object.values(balances).reduce((acc, balance) => acc + balance, 0n);
 
 const calculateAirdropAmount = (balances, airdropAmount, totalBalances) =>
     Object.entries(balances).reduce(
