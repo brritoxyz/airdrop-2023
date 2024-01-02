@@ -44,31 +44,41 @@ const computeAccountBalances = (logs) =>
         return acc;
     }, {});
 
+const sumBalances = (balances) =>
+    Object.values(balances).reduce((acc, balance) => acc + balance, BigInt(0));
+
+const calculateAirdropAmount = (balances, airdropAmount, totalBalances) =>
+    Object.entries(balances).reduce(
+        (acc, [account, balance]) => ({
+            ...acc,
+            [account]: (airdropAmount * balance) / totalBalances,
+        }),
+        {}
+    );
+
 const getTransferLogs = async () => {
+    const sharedTransferEventConfig = {
+        abi: erc20Abi,
+        eventName: "Transfer",
+        toBlock: SNAPSHOT_BLOCK ?? 0,
+        strict: true,
+    };
+
     try {
         const brr = await client.getContractEvents({
             address: BRR,
-            abi: erc20Abi,
-            eventName: "Transfer",
             fromBlock: BRR_DEPLOYMENT_BLOCK,
-            toBlock: SNAPSHOT_BLOCK ?? 0,
-            strict: true,
+            ...sharedTransferEventConfig,
         });
         const stakedBRR = await client.getContractEvents({
             address: STAKED_BRR,
-            abi: erc20Abi,
-            eventName: "Transfer",
             fromBlock: STAKED_BRR_DEPLOYMENT_BLOCK,
-            toBlock: SNAPSHOT_BLOCK ?? 0,
-            strict: true,
+            ...sharedTransferEventConfig,
         });
         const brrETH = await client.getContractEvents({
             address: BRR_ETH,
-            abi: erc20Abi,
-            eventName: "Transfer",
             fromBlock: BRR_ETH_DEPLOYMENT_BLOCK,
-            toBlock: SNAPSHOT_BLOCK ?? 0,
-            strict: true,
+            ...sharedTransferEventConfig,
         });
 
         return {
@@ -82,46 +92,49 @@ const getTransferLogs = async () => {
 };
 
 const calculateAirdropAmounts = async () => {
-    const { brr, stakedBRR, brrETH } = await getTransferLogs();
+    try {
+        const { brr, stakedBRR, brrETH } = await getTransferLogs();
 
-    // Combine BRR and stakedBRR for a simple, fair distribution.
-    const brrBalances = computeAccountBalances([...brr, ...stakedBRR]);
+        // Combine BRR and stakedBRR for a simple, fair distribution.
+        const brrBalances = computeAccountBalances([...brr, ...stakedBRR]);
 
-    const brrETHBalances = computeAccountBalances(brrETH);
-    const totalBrrBalances = Object.values(brrBalances).reduce(
-        (acc, balance) => acc + balance,
-        BigInt(0)
-    );
-    const totalBrrETHBalances = Object.values(brrETHBalances).reduce(
-        (acc, balance) => acc + balance,
-        BigInt(0)
-    );
-    const brrAirdropAmounts = Object.entries(brrBalances).reduce(
-        (acc, [account, balance]) => ({
-            ...acc,
-            [account]: (BRR_AIRDROP_AMOUNT * balance) / totalBrrBalances,
-        }),
-        {}
-    );
-    const brrETHAirdropAmounts = Object.entries(brrETHBalances).reduce(
-        (acc, [account, balance]) => ({
-            ...acc,
-            [account]: (BRR_ETH_AIRDROP_AMOUNT * balance) / totalBrrETHBalances,
-        }),
-        {}
-    );
+        const brrETHBalances = computeAccountBalances(brrETH);
+        const totalBrrBalances = sumBalances(brrBalances);
+        const totalBrrETHBalances = sumBalances(brrETHBalances);
+        const brrAirdropAmounts = calculateAirdropAmount(
+            brrBalances,
+            BRR_AIRDROP_AMOUNT,
+            totalBrrBalances
+        );
+        const brrETHAirdropAmounts = calculateAirdropAmount(
+            brrETHBalances,
+            BRR_ETH_AIRDROP_AMOUNT,
+            totalBrrETHBalances
+        );
 
-    // Store the transfer logs, token balances, and airdrop amounts for reviewal purposes.
-    await fsWriteFileSyncJSON(FILEPATHS.BRR_TRANSFER_LOGS, brr);
-    await fsWriteFileSyncJSON(FILEPATHS.STAKED_BRR_TRANSFER_LOGS, stakedBRR);
-    await fsWriteFileSyncJSON(FILEPATHS.BRR_ETH_TRANSFER_LOGS, brrETH);
-    await fsWriteFileSyncJSON(FILEPATHS.BRR_TOKEN_BALANCES, brrBalances);
-    await fsWriteFileSyncJSON(FILEPATHS.BRR_ETH_TOKEN_BALANCES, brrETHBalances);
-    await fsWriteFileSyncJSON(FILEPATHS.BRR_AIRDROP_AMOUNTS, brrAirdropAmounts);
-    await fsWriteFileSyncJSON(
-        FILEPATHS.BRR_ETH_AIRDROP_AMOUNTS,
-        brrETHAirdropAmounts
-    );
+        // Store the transfer logs, token balances, and airdrop amounts for reviewal purposes.
+        await fsWriteFileSyncJSON(FILEPATHS.BRR_TRANSFER_LOGS, brr);
+        await fsWriteFileSyncJSON(
+            FILEPATHS.STAKED_BRR_TRANSFER_LOGS,
+            stakedBRR
+        );
+        await fsWriteFileSyncJSON(FILEPATHS.BRR_ETH_TRANSFER_LOGS, brrETH);
+        await fsWriteFileSyncJSON(FILEPATHS.BRR_TOKEN_BALANCES, brrBalances);
+        await fsWriteFileSyncJSON(
+            FILEPATHS.BRR_ETH_TOKEN_BALANCES,
+            brrETHBalances
+        );
+        await fsWriteFileSyncJSON(
+            FILEPATHS.BRR_AIRDROP_AMOUNTS,
+            brrAirdropAmounts
+        );
+        await fsWriteFileSyncJSON(
+            FILEPATHS.BRR_ETH_AIRDROP_AMOUNTS,
+            brrETHAirdropAmounts
+        );
+    } catch (err) {
+        console.error(err);
+    }
 };
 
 calculateAirdropAmounts();
