@@ -31,6 +31,8 @@ const FILEPATHS = {
     BRR_ETH_TRANSFER_LOGS: `${__dirname}/data/transferLogs/brrETH.json`,
     BRR_TOKEN_BALANCES: `${__dirname}/data/tokenBalances/brr.json`,
     BRR_ETH_TOKEN_BALANCES: `${__dirname}/data/tokenBalances/brrETH.json`,
+    BRR_AIRDROP_AMOUNTS: `${__dirname}/data/airdropAmounts/brr.json`,
+    BRR_ETH_AIRDROP_AMOUNTS: `${__dirname}/data/airdropAmounts/brrETH.json`,
 };
 
 module.exports = {
