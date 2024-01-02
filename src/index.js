@@ -60,7 +60,7 @@ const getTransferLogs = async () => {
     const sharedTransferEventConfig = {
         abi: erc20Abi,
         eventName: "Transfer",
-        toBlock: SNAPSHOT_BLOCK ?? 0,
+        toBlock: SNAPSHOT_BLOCK,
         strict: true,
     };
 
