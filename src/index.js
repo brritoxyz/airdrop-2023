@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-const client = require("./viem");
+const { publicClient } = require("./viem");
 const {
     BRR,
     BRR_DEPLOYMENT_BLOCK,
@@ -65,17 +65,17 @@ const getTransferLogs = async () => {
     };
 
     try {
-        const brr = await client.getContractEvents({
+        const brr = await publicClient.getContractEvents({
             address: BRR,
             fromBlock: BRR_DEPLOYMENT_BLOCK,
             ...sharedTransferEventConfig,
         });
-        const stakedBRR = await client.getContractEvents({
+        const stakedBRR = await publicClient.getContractEvents({
             address: STAKED_BRR,
             fromBlock: STAKED_BRR_DEPLOYMENT_BLOCK,
             ...sharedTransferEventConfig,
         });
-        const brrETH = await client.getContractEvents({
+        const brrETH = await publicClient.getContractEvents({
             address: BRR_ETH,
             fromBlock: BRR_ETH_DEPLOYMENT_BLOCK,
             ...sharedTransferEventConfig,
