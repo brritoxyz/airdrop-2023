@@ -12,26 +12,25 @@ const fsWriteFileSyncJSON = require("./utils/fsWriteFileSyncJSON");
 const distributeAirdrops = async (airdropAmounts) => {
     try {
         const recipients = Object.keys(airdropAmounts);
-
-        // Multicall contract `calls` argument.
-        const aggregateCalldata = recipients.map((recipient) => [
-            BRR,
-            encodeFunctionData({
-                abi: erc20Abi,
-                functionName: "transferFrom",
-                args: [
-                    walletClient.account.address,
-                    recipient,
-                    BigInt(airdropAmounts[recipient]),
-                ],
-            }),
-        ]);
         const { request } = await publicClient.simulateContract({
             account: walletClient.account,
             address: MULTICALL,
             abi: multicallAbi,
             functionName: "aggregate",
-            args: [aggregateCalldata],
+            args: [
+                recipients.map((recipient) => [
+                    BRR,
+                    encodeFunctionData({
+                        abi: erc20Abi,
+                        functionName: "transferFrom",
+                        args: [
+                            walletClient.account.address,
+                            recipient,
+                            BigInt(airdropAmounts[recipient]),
+                        ],
+                    }),
+                ]),
+            ],
         });
 
         return walletClient.writeContract(request);
