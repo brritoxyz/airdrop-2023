@@ -25,6 +25,8 @@ const BRR_AIRDROP_AMOUNT = 904820327999999999999999n;
 // brrETH token holders split ~20% of the total airdrop amount.
 const BRR_ETH_AIRDROP_AMOUNT = 226205081999999999999999n;
 
+const MULTICALL = "0xca11bde05977b3631167028862be2a173976ca11";
+
 const FILEPATHS = {
     BRR_TRANSFER_LOGS: `${__dirname}/data/transferLogs/brr.json`,
     STAKED_BRR_TRANSFER_LOGS: `${__dirname}/data/transferLogs/stakedBRR.json`,
@@ -33,6 +35,7 @@ const FILEPATHS = {
     BRR_ETH_TOKEN_BALANCES: `${__dirname}/data/tokenBalances/brrETH.json`,
     BRR_AIRDROP_AMOUNTS: `${__dirname}/data/airdropAmounts/brr.json`,
     BRR_ETH_AIRDROP_AMOUNTS: `${__dirname}/data/airdropAmounts/brrETH.json`,
+    DISTRIBUTION_TX_HASHES: `${__dirname}/data/distribution/transactions.json`,
 };
 
 module.exports = {
@@ -47,4 +50,5 @@ module.exports = {
     BRR_AIRDROP_AMOUNT,
     BRR_ETH_AIRDROP_AMOUNT,
     FILEPATHS,
+    MULTICALL,
 };
